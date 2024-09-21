@@ -1,6 +1,6 @@
 import fetchCountries from './fetchCountries'
 import debounce from 'lodash.debounce'
-import { alert } from 'pnotify'
+import alert  from 'pnotify'
 const searchQuery = document.querySelector('.search')
 
 const resultsContainer = document.querySelector('.result')
