@@ -7,10 +7,13 @@ import '@pnotify/mobile/dist/PNotifyMobile.css';
 
 defaultModules.set(PNotifyMobile, {});
 const searchQuery = document.querySelector('.search')
-
 const resultsContainer = document.querySelector('.result')
+const counryList = document.querySelector('.country-list')
 
-searchQuery.addEventListener('input', debounce( () => {
+
+searchQuery.addEventListener('input', debounce(() => {
+    resultsContainer.innerHTML = '';
+    counryList.innerHTML = '';
     fetchCountries(searchQuery.value).then(countries => {
         if (countries.length === 1) {
             createCounryCard(countries)
@@ -18,22 +21,26 @@ searchQuery.addEventListener('input', debounce( () => {
             createCounryList(countries)
         }
     }
-     )
+    )
+    e.target.value = ''
 }, 3000))
 
 function createCounryList(counryList) {
     const listMarkup = counryList.map(country => {
         return `<li>${country.name.official}</li>`
     }).join('')
-resultsContainer.innerHTML = `<ul>${listMarkup}</ul>`
+counryList.innerHTML = listMarkup
 }
 
 function createCounryCard(country) {
-    return `<h1></h1>
+    const languages = country[0].languages;
+    const languageKeys = Object.keys(languages);
+    const language = languageKeys.map(lang => `<li>${languages[lang]}</li>`).join(' ')
+const cardMarkup = `<h1></h1>
 <p>Capital: ${country.capital}</p>
 <p>Population: ${country.population}</p>
-<ul>Languages: ${country.languages.map(lang => `<li>${lang.name}</li>`).join(',')}</ul>
-<img src="${country.flag}" alt="Flag of ${country.name}">
+<ul>Languages: ${language}</ul>
+<img src="${country[0].flags.png}" alt="Flag of ${country[0].flags.alt}">
 `
 resultsContainer.innerHTML = cardMarkup
 }
