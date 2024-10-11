@@ -6,22 +6,28 @@ import * as PNotifyMobile from '@pnotify/mobile';
 import '@pnotify/mobile/dist/PNotifyMobile.css';
 
 defaultModules.set(PNotifyMobile, {});
+
 const searchQuery = document.querySelector('.search')
 const resultsContainer = document.querySelector('.result')
 const counryList = document.querySelector('.country-list')
 
 
-searchQuery.addEventListener('input', debounce(() => {
+searchQuery.addEventListener('input', debounce((e) => {
     resultsContainer.innerHTML = '';
     counryList.innerHTML = '';
+    const query = e.target.value.trim();
+    if (!query) return;
+
     fetchCountries(searchQuery.value).then(countries => {
         if (countries.length === 1) {
             createCounryCard(countries)
         } else if(countries.length > 1 && countries.length >= 10){
             createCounryList(countries)
+        }else if (countries.length > 10) {
+            createNotification('Too many matches found. Please enter a more specific query.');
         }
     }
-    )
+    ).catch(err => createNotification('Country not found.'));
     e.target.value = ''
 }, 3000))
 
@@ -36,7 +42,7 @@ function createCounryCard(country) {
     const languages = country[0].languages;
     const languageKeys = Object.keys(languages);
     const language = languageKeys.map(lang => `<li>${languages[lang]}</li>`).join(' ')
-const cardMarkup = `<h1></h1>
+const cardMarkup = `<h1>${country[0].name.official}</h1>
 <p>Capital: ${country.capital}</p>
 <p>Population: ${country.population}</p>
 <ul>Languages: ${language}</ul>
@@ -47,7 +53,7 @@ resultsContainer.innerHTML = cardMarkup
 
 function createNotification(message) {
     alert({
-        text: '',
+        text: 'message',
             type: 'info',
         delay: 2000,
     })
