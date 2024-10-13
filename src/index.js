@@ -1,14 +1,16 @@
 import fetchCountries from './fetchCountries'
 import debounce from 'lodash.debounce'
-import { alert, defaultModules } from '@pnotify/core';
+import { error, defaultModules } from '@pnotify/core';
 import '@pnotify/core/dist/PNotify.css';
+import '@pnotify/core/dist/BrightTheme.css';
+
 import * as PNotifyMobile from '@pnotify/mobile';
 import '@pnotify/mobile/dist/PNotifyMobile.css';
 
 defaultModules.set(PNotifyMobile, {});
 
 const searchQuery = document.querySelector('.search')
-const resultsContainer = document.querySelector('.result')
+const resultsContainer = document.querySelector('.country-info')
 const counryList = document.querySelector('.country-list')
 
 
@@ -21,7 +23,7 @@ searchQuery.addEventListener('input', debounce((e) => {
     fetchCountries(searchQuery.value).then(countries => {
         if (countries.length === 1) {
             createCounryCard(countries)
-        } else if(countries.length > 1 && countries.length >= 10){
+        } else if(countries.length > 1 && countries.length <= 10){
             createCounryList(countries)
         }else if (countries.length > 10) {
             createNotification('Too many matches found. Please enter a more specific query.');
@@ -29,10 +31,10 @@ searchQuery.addEventListener('input', debounce((e) => {
     }
     ).catch(err => createNotification('Country not found.'));
     e.target.value = ''
-}, 3000))
+}, 500))
 
-function createCounryList(counryList) {
-    const listMarkup = counryList.map(country => {
+function createCounryList(countries) {
+    const listMarkup = countries.map(country => {
         return `<li>${country.name.official}</li>`
     }).join('')
 counryList.innerHTML = listMarkup
@@ -52,9 +54,9 @@ resultsContainer.innerHTML = cardMarkup
 }
 
 function createNotification(message) {
-    alert({
+    error({
         text: 'message',
             type: 'info',
-        delay: 2000,
+        delay: 500,
     })
 }
